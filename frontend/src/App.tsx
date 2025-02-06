@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './App.css';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useEffect, useState } from 'react';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { loginWithRedirect, user, getAccessTokenSilently, logout, isAuthenticated } = useAuth0();
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchToken = async () => {
+        try {
+          const accessToken = await getAccessTokenSilently();
+          setToken(accessToken);
+          console.log("Access Token:", accessToken);
+        } catch (error) {
+          console.error("Error fetching token:", error);
+        }
+      };
+      fetchToken();
+    }
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="container">
+      {isAuthenticated && user ? (
+        <div className="profile-card">
+          <h1>Welcome, {user.name}</h1>
+          <p>Email: {user.email}</p>
+          {user.picture && <img src={user.picture} alt={user.name} className="avatar" />}
+          {token && <p className="token">Token: {token.substring(0, 20)}...</p>}
+          <button className="btn logout" onClick={() => logout()}>Log Out</button>
+        </div>
+      ) : (
+        <button className="btn login" onClick={() => loginWithRedirect()}>Log In</button>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
+
