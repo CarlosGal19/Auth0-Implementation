@@ -12,6 +12,8 @@ createRoot(document.getElementById('root')!).render(
       redirect_uri: window.location.origin,
       audience: `${import.meta.env.VITE_AUTH0_DOMAIN}/api/v2/`
     }}
+    useRefreshTokens={true}
+    cacheLocation="localstorage"
   >
     <App />
   </Auth0Provider>,
