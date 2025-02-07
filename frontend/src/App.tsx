@@ -12,6 +12,7 @@ function App() {
         try {
           const accessToken = await getAccessTokenSilently();
           setToken(accessToken);
+          console.log(user)
           console.log("Access Token:", accessToken);
         } catch (error) {
           console.error("Error fetching token:", error);
@@ -19,7 +20,7 @@ function App() {
       };
       fetchToken();
     }
-  }, [isAuthenticated, getAccessTokenSilently]);
+  }, [isAuthenticated, getAccessTokenSilently, user]);
 
   return (
     <div className="container">
